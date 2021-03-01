@@ -22,7 +22,7 @@ router.get("/games", async (req, res, next) => {
                 THEN 1 ELSE 0
             END, c.category ;`);
         res.header("Access-Control-Allow-Origin", "*");
-        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        res.header("Access-Control-Allow-Headers", "X-Requested-With");
         return res.json(games.rows);
     }
     catch (err) {
