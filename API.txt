@@ -1,0 +1,128 @@
+SWPAG API
+
+Category
+ - "Board"
+ - "Card"
+ - "Dice"
+ - "Tile"
+ - "Other"
+
+Game
+ - "Tic-Tac-Toe"
+ - "Checkers"
+ - "Chess"
+ - "Cribbage"
+ - "Backgammon"
+ - "Risk"
+ - "Global Thermonuclear War"
+
+
+
+GET - /api/games
+Input:
+Output:
+[
+  {
+    "category": "Board",
+    "array": [
+      "Checkers|Checkers (under construction)",
+      "Chess|Chess (coming soon)",
+      "Tic-Tac-Toe|Tic-Tac-Toe"
+    ]
+  },
+  {
+    "category": "<category>",
+    "array": [
+      "<name>|<title>",
+      // additional games
+    ]
+  },
+  // additional categories
+]
+
+
+
+GET - /api/engines
+Input:
+{
+    "params": {
+        "Category": "<category>",
+        "Game": "<game>"
+
+        "Username": "<username>" // optional
+    }
+}
+Output:
+[
+    {
+        "id":1,
+        "engine":"Random",
+        "username":"SWPAG"
+    },
+    // additional engines
+]
+
+
+
+GET - /api/engine
+Input:
+{
+    "params": {
+        "Category": "<category>",
+        "Game": "<game>",
+        "ID": "<id>"
+        "Username": username,
+        "token": token
+    }
+}
+Output:
+"<engine javascript code string>"
+
+
+
+POST - /api/engine
+Input:
+{
+    "params": {
+        "Category": "<category>",
+        "Game": "<game>",
+        "Username": <username>,
+        "EngineCode": <code>,
+        "EngineName": <name>
+        "token": token
+    }
+}
+Output:
+
+
+
+DELETE - /api/engine
+Input:
+{
+    "params": {
+        "EngineID": id
+        "Username": username,
+        "token": token
+    }
+}
+Output:
+
+
+
+GET - /api/move
+Input:
+{
+    "params": {
+        "Category": "<category>",
+        "Game": "<game>",
+        "PlayerEngine": <engine>,
+        "Data": {
+            // TTT(9) - 0:open, 1:current, 2;next
+            // Checkers(32) - 0:open, 1/3:current, 2/4;next
+            "Board": "[0,...,0]"
+        }
+    }
+}
+Output:
+"Tic-Tac-Toe" - {"row":0,"col":0}
+"Checkers" - {"from":{"row":0,"col":3},"to":[{"row":1,"col":3}]}

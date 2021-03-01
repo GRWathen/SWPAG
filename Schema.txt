@@ -1,0 +1,23 @@
+
+ SWPAG Database Schema
+
+     Categories
+    ┌──────────┐
+ ┌─→│ id       │
+ │  │ category │
+ │  └──────────┘
+ │
+ │   Games                Users
+ │  ┌─────────────┐      ┌──────────┐
+ │  │ id          │←─┐   │ id       │←─┐
+ │  │ game        │  │   │ username │  │
+ │  │ title       │  │   │ password │  │
+ └──┤ category_id │  │   └──────────┘  │
+    └─────────────┘  │                 │
+                     │    Engines      │
+                     │   ┌─────────┐   │
+                     │   │ id      │   │
+                     │   │ engine  │   │
+                     └───┤ game_id │   │
+                         │ user_id ├───┘
+                         └─────────┘

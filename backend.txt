@@ -1,0 +1,164 @@
+npm install nunjucks
+npm install morgan
+npm install jsonschema
+npm install helmet —save
+
+
+
+
+
+
+
+Error Handler
+--------------------------------------------------
+app.get("/users/:username", function(req, res, next){
+  try {
+    const user = USERS.find(u => u.username === req.params.username);
+    if (!user) throw new ExpressError("Not found!", 404);
+    return res.json({ user });
+  } catch (err) {
+    return next(err);
+  }
+})
+==================================================
+
+userRoutes.js
+--------------------------------------------------
+const express = require("express");
+const router = new express.Router();
+const db = require("./db");
+
+router.get("/", (req, res, next) => {
+  …
+})
+
+
+
+router.get("/good-search", async function (req, res, next) {
+  try {
+    const type = req.query.type;
+    const results = await db.query(`SELECT id, name, type FROM users WHERE type=$1`, [type]);
+    return res.json(results.rows);
+  }
+  catch (err) {
+    return next(err);
+  }
+});
+
+
+router.post("/", async function (req, res, next) {
+  try {
+    const { name, type } = req.body;
+    const result = await db.query(`INSERT INTO users (name, type) VALUES ($1, $2) RETURNING id, name, type`, [name, type]);
+    return res.status(201).json(result.rows[0]);
+  }
+  catch (err) {
+    return next(err);
+  }
+});
+
+router.patch("/:id", async function (req, res, next) {
+  try {
+    const { name, type } = req.body;
+    const result = await db.query(`UPDATE users SET name=$1, type=$2 WHERE id = $3 RETURNING id, name, type`, [name, type, req.params.id]);
+    return res.json(result.rows[0]);
+  }
+  catch (err) {
+    return next(err);
+  }
+});
+
+router.delete("/:id", async function (req, res, next) {
+  try {
+    const result = await db.query("DELETE FROM users WHERE id = $1", [req.params.id]);
+    return res.json({message: "Deleted"});
+  }
+  catch (err) {
+    return next(err);
+  }
+});
+
+
+
+…
+
+module.exports = router;
+==================================================
+
+middleware.js
+--------------------------------------------------
+const ExpressError = require("./expressError");
+
+function logger (req, res, next) {
+  return next();
+}
+
+function checkForPassword (req, res, next) {
+  return next();
+}
+
+module.exports = { logger, checkForPassword };
+==================================================
+
+app.js
+--------------------------------------------------
+app.use(function (req, res, next) {
+  console.log();
+  next();
+});
+
+---------- params ----------
+app.get('/staff/:fname', (req, res, next) => {
+  return res.send(`This instructor is ${req.params.fname}`);
+});
+---------- query string ----------
+app.get('/search', (req, res, next) => { // ?term=1&sort=2
+  const {term = "default", sort} = req.query;
+  return res.send(`Term:${term}`);
+});
+---------- body ----------
+app.post('/register', (req, res, next) => {
+  return res.send("Welcome ${req.body.username}");
+});
+---------- json ----------
+app.get('/api/staff/:fname', (req, res, next) => {
+  return res.json({ fname: req.params.fname });
+});
+---------- status codes ----------
+app.get('/whoops', (req, res, next) => {
+  return res.status(404).json('Whoops! Nothing here!');
+});
+
+---------- routes - middleware ----------
+const middleware = require("./middleware");
+app.use(middleware.logger);
+app.get("/private", middleware.checkForPassword, (req, res, next) => {
+  …
+})
+
+---------- routes - specific ----------
+const itemsRoutes = require("./itemsRoutes");
+app.use("/items", itemsRoutes); // apply a prefix to every route in itemsRoutes
+==================================================
+app.get(path, callback)
+app.post(path, callback)
+app.put(path, callback)
+app.patch(path, callback)
+app.delete(path, callback)
+
+
+
+logger
+--------------------------------------------------
+var express = require('express')
+var morgan  = require('morgan')
+const morgan  = require('morgan')
+var app = express()
+app.use(morgan('combined'))
+app.use(morgan('dev'))
+==================================================
+
+*Security - CSRF, …
+-------------------------
+const helmet = require("helmet");
+app.use(helmet());
