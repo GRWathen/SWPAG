@@ -8,6 +8,12 @@ const db = require("../db");
 const ExpressError = require("../expressError.js");
 const { SECRET_KEY } = require("../config.js");
 
+router.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
 router.get("/games", async (req, res, next) => {
     try {
         const games = await db.query(
@@ -21,8 +27,6 @@ router.get("/games", async (req, res, next) => {
                 WHEN c.category = 'Other'
                 THEN 1 ELSE 0
             END, c.category ;`);
-        res.header("Access-Control-Allow-Origin", "*");
-        res.header("Access-Control-Allow-Headers", "X-Requested-With");
         return res.json(games.rows);
     }
     catch (err) {
