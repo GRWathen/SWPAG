@@ -16,8 +16,8 @@ const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:3001";
 
 const DB_URI = (process.env.NODE_ENV === "test")
     ? "postgresql:///swpagDB-test"
-    //: process.env.DATABASE_URL || "postgresql:///swpagDB";
-    : getDatabaseUri() || "postgresql:///swpagDB";
+    : process.env.DATABASE_URL || "postgresql:///swpagDB";
+    //: getDatabaseUri() || "postgresql:///swpagDB";
 
 console.log("Using database", DB_URI);
 
