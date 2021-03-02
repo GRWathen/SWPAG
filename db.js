@@ -1,5 +1,6 @@
 const { Client } = require("pg");
-const { DB_URI } = require("./config");
+//const { DB_URI } = require("./config");
+const { getDatabaseUri } = require("./config");
 
 const db = new Client({
     //connectionString: DB_URI,
