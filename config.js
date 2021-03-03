@@ -11,10 +11,10 @@ const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:3001";
 // Use dev database, testing database, or via env var, production database
 function getDatabaseUri() {
     return (process.env.NODE_ENV === "test")
-        ? "jobly_test"
-        : process.env.DATABASE_URL || "jobly";
+        ? "swpagDB-test"
+        : process.env.DATABASE_URL || "swpagDB";
 }
-/*/
+//*/
 // database is:
 //
 // - on Heroku, get from env var DATABASE_URL
@@ -22,8 +22,8 @@ function getDatabaseUri() {
 // - else: 'swpag'
 const DB_URI = (process.env.NODE_ENV === "test")
     ? "postgresql:///swpagDB-test"
-    : process.env.DATABASE_URL || "postgresql:///swpagDB";
-    //: getDatabaseUri() || "postgresql:///swpagDB";
+    //: process.env.DATABASE_URL || "postgresql:///swpagDB";
+    : getDatabaseUri() || "postgresql:///swpagDB";
 
 console.log("Using database", DB_URI);
 //*/
@@ -33,6 +33,6 @@ module.exports = {
     PORT,
     BCRYPT_WORK_FACTOR,
     BASE_URL,
-    //DB_URI
-    getDatabaseUri
+    DB_URI
+    //getDatabaseUri
 };
