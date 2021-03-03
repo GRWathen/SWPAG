@@ -1,3 +1,7 @@
+"use strict";
+
+module.exports = {
+    move: function (data) {
         let indexes = [];
         for (let c = 0; c < data["Board"].length; c++) {
             if (data["Board"][c] === "0") {
@@ -12,3 +16,6 @@
             "row": Math.trunc(indexes[index] / 3),
             "col": indexes[index] % 3
         });
+
+    }
+};

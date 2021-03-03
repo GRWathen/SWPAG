@@ -1,6 +1,7 @@
 "use strict";
+
 module.exports = {
-  move: function (data) {
+    move: function (data) {
         const m = data["Board"].indexOf("0");
         if (m === -1) {
             return ({});

@@ -1,3 +1,7 @@
+"use strict";
+
+module.exports = {
+    move: function (data) {
         const board = data["Board"];
         const moves = [];
 
@@ -164,4 +168,7 @@
             return (null);
         }
         const index = Math.floor(Math.random() * moves.length);
+
         return (moves[index]);
+    }
+};
