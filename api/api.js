@@ -149,7 +149,13 @@ router.post("/engine", async (req, res, next) => {
         };
         //*/
         const code = req.body.params.EngineCode;
+        console.log("--------------------------------------------------");
+        console.log(`User:${userID}   Engine:${engineID}   Game:${gameID}   Path:${path}`);
+        console.log("==================================================");
         data = fs.writeFileSync(path, templateStart + code + templateEnd, 'utf8');
+        console.log("--------------------------------------------------");
+        console.log(`Data:${data}`);
+        console.log("==================================================");
 
         return res.send("SEND");
     }
