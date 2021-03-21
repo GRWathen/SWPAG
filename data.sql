@@ -50,7 +50,8 @@ CREATE TABLE engines (
     id SERIAL PRIMARY KEY, 
     engine TEXT NOT NULL,
     game_id INTEGER REFERENCES games,
-    user_id INTEGER REFERENCES users
+    user_id INTEGER REFERENCES users,
+    code TEXT NOT NULL
 );
 
 
@@ -102,5 +103,6 @@ CREATE TABLE engines (
     id SERIAL PRIMARY KEY, 
     engine TEXT NOT NULL,
     game_id INTEGER REFERENCES games,
-    user_id INTEGER REFERENCES users
+    user_id INTEGER REFERENCES users,
+    code TEXT NOT NULL
 );

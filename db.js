@@ -3,7 +3,7 @@ const { DB_URI } = require("./config");
 //const { getDatabaseUri } = require("./config");
 
 let db;
-console.log(DB_URI);
+//console.log(DB_URI);
 if (DB_URI.startsWith("swpagDB")) {
     db = new Client({
         connectionString: DB_URI

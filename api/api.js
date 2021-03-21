@@ -75,6 +75,10 @@ router.get("/engine", async (req, res, next) => {
         }
         const path = `${__dirname}/${req.query.Category}/${req.query.Game}/${req.query.ID}.js`;
 
+        if (!fs.existsSync(path)) {
+            await createEngine(path, req.query.ID);
+        }
+
         data = fs.readFileSync(path, 'utf8')
 
         let firstIndex = data.indexOf("\n");
@@ -126,13 +130,19 @@ router.post("/engine", async (req, res, next) => {
                 AND (e.user_id = '${userID}')
             ;`);
 
+        const code = req.body.params.EngineCode;
+
         if ((engineID.rows.length > 0) && (engineID.rows[0].hasOwnProperty("id"))) {
             engineID = engineID.rows[0]["id"];
+            await db.query(
+                `UPDATE engines SET code = $1 WHERE id = $2`,
+                [code, engineID]
+            );
         }
         else {
             engineID = await db.query(
-                `INSERT INTO engines (engine, game_id, user_id) VALUES ($1, $2, $3) RETURNING id;`,
-                [req.body.params.EngineName, gameID, userID]
+                `INSERT INTO engines (engine, game_id, user_id, code) VALUES ($1, $2, $3, $4) RETURNING id;`,
+                [req.body.params.EngineName, gameID, userID, code]
             );
             engineID = engineID.rows[0]["id"];
         }
@@ -148,14 +158,8 @@ router.post("/engine", async (req, res, next) => {
             }
         };
         //*/
-        const code = req.body.params.EngineCode;
-        console.log("--------------------------------------------------");
-        console.log(`User:${userID}   Engine:${engineID}   Game:${gameID}   Path:${path}`);
-        console.log("==================================================");
+
         data = fs.writeFileSync(path, templateStart + code + templateEnd, 'utf8');
-        console.log("--------------------------------------------------");
-        console.log(`Data:${data}`);
-        console.log("==================================================");
 
         return res.send("SEND");
     }
@@ -200,14 +204,14 @@ router.delete("/engine", async (req, res, next) => {
             ;`);
         categoryName = categoryName.rows[0]["category"];
 
-        const path = `${__dirname}/${categoryName}/${gameName}/${engineID}.js`;
-        data = fs.unlinkSync(path);
-
         let result = await db.query(
             `DELETE
             FROM engines AS e
             WHERE e.id = '${engineID}'
             ;`);
+
+        const path = `${__dirname}/${categoryName}/${gameName}/${engineID}.js`;
+        data = fs.unlinkSync(path);
 
         return res.send("SEND");
     }
@@ -230,9 +234,14 @@ router.delete("/engine", async (req, res, next) => {
 }
 //*/
 // TODO: POST?
-router.get("/move", (req, res, next) => {
+router.get("/move", async (req, res, next) => {
     try {
         const path = `${__dirname}/${req.query.Category}/${req.query.Game}/${req.query.PlayerEngine}.js`;
+
+        if (!fs.existsSync(path)) {
+            await createEngine(path, req.query.PlayerEngine);
+        }
+
         delete require.cache[path];
         const engine = require(path);
         const data = JSON.parse(req.query.Data);
@@ -244,5 +253,21 @@ router.get("/move", (req, res, next) => {
         return next(err);
     }
 });
+
+async function createEngine(path, engineID) {
+    let code = await db.query(
+        `SELECT e.code FROM engines AS e WHERE (e.id = '${engineID}');`);
+
+    if ((code.rows.length > 0) && (code.rows[0].hasOwnProperty("code"))) {
+        code = code.rows[0]["code"];
+
+        const templateStart = "\"use strict\";\nmodule.exports = {\n  move: function (data) {\n";
+        const templateEnd = "\n    }\n};";
+
+        const data = fs.writeFileSync(path, templateStart + code + templateEnd, 'utf8');
+    }
+
+    return;
+}
 
 module.exports = router;
