@@ -51,6 +51,7 @@ router.get("/engines", async (req, res, next) => {
                 AND (g.game = '${req.query.Game}')
                 ${(req.query.Username === undefined) ? "" :
                 `AND (u.username = '${req.query.Username}')`}
+            ORDER BY u.username, e.engine
             ;`
         );
         return res.json(engines.rows);
