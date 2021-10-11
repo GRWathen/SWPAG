@@ -51,6 +51,8 @@ CREATE TABLE engines (
     engine TEXT NOT NULL,
     game_id INTEGER REFERENCES games,
     user_id INTEGER REFERENCES users,
+    rating INTEGER DEFAULT 1000,
+    count INTEGER DEFAULT 0,
     code TEXT NOT NULL
 );
 
@@ -104,5 +106,7 @@ CREATE TABLE engines (
     engine TEXT NOT NULL,
     game_id INTEGER REFERENCES games,
     user_id INTEGER REFERENCES users,
+    rating INTEGER DEFAULT 1000,
+    count INTEGER DEFAULT 0,
     code TEXT NOT NULL
 );

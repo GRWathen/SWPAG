@@ -39,7 +39,7 @@ router.get("/games", async (req, res, next) => {
 router.get("/engines", async (req, res, next) => {
     try {
         const engines = await db.query(
-            `SELECT e.id, e.engine, u.username
+            `SELECT e.id, e.engine, e.rating, e.count, u.username
             FROM engines AS e
             INNER JOIN games AS g
             ON e.game_id = g.id
@@ -225,7 +225,7 @@ router.delete("/engine", async (req, res, next) => {
 {
     "Category": "<category>"
     "Game": "<game>"
-    "PlayerEngine": "<engine>",
+    "PlayerEngine": "<engine>"
     "Data": {
         // TTT(9) - 0:open, 1:current, 2;next
         // Checkers(32) - 0:open, 1/3:current, 2/4;next
@@ -254,6 +254,177 @@ router.get("/move", async (req, res, next) => {
         return next(err);
     }
 });
+
+/*/
+{
+    "TopEngine": <topEngine>
+    "BottomEngine": <bottomEngine>,
+    "Result": <result>  // 0:Draw, 1:Top won, 2:Bottom won
+}
+//*/
+// TODO: confirm rating updates
+router.post("/ratings", async (req, res, next) => {
+    try {
+        const top = req.body.params.TopEngine;
+        const bottom = req.body.params.BottomEngine;
+        const result = req.body.params.Result;
+
+        let topRating = null;
+        let topCount = null;
+        const topResults = await db.query(
+            `SELECT e.rating, e.count FROM engines AS e WHERE (e.id = '${top}');`
+        );
+        if (topResults.rows.length > 0) {
+            if (topResults.rows[0].hasOwnProperty("rating")) {
+                topRating = topResults.rows[0]["rating"];
+            }
+            else {
+                return res.send("BAD TOP RATING");
+            }
+            if (topResults.rows[0].hasOwnProperty("count")) {
+                topCount = topResults.rows[0]["count"];
+            }
+            else {
+                return res.send("BAD TOP COUNT");
+            }
+        }
+        else {
+            return res.send("BAD TOP RESULTS");
+        }
+
+        let bottomRating = null;
+        let bottomCount = null;
+        const bottomResults = await db.query(
+            `SELECT e.rating, e.count FROM engines AS e WHERE (e.id = '${bottom}');`
+        );
+        if (bottomResults.rows.length > 0) {
+            if (bottomResults.rows[0].hasOwnProperty("rating")) {
+                bottomRating = bottomResults.rows[0]["rating"];
+            }
+            else {
+                return res.send("BAD BOTTOM RATING");
+            }
+            if (bottomResults.rows[0].hasOwnProperty("count")) {
+                bottomCount = bottomResults.rows[0]["count"];
+            }
+            else {
+                return res.send("BAD BOTTOM COUNT");
+            }
+        }
+        else {
+            return res.send("BAD BOTTOM RESULTS");
+        }
+
+        let diff = Math.abs(topRating - bottomRating);
+        let points;
+        switch (true) {
+            case (diff < 12):
+                points = 0;
+                break;
+            case (diff < 34):
+                points = 1;
+                break;
+            case (diff < 56):
+                points = 2;
+                break;
+            case (diff < 78):
+                points = 3;
+                break;
+            case (diff < 101):
+                points = 4;
+                break;
+            case (diff < 126):
+                points = 5;
+                break;
+            case (diff < 151):
+                points = 6;
+                break;
+            case (diff < 177):
+                points = 7;
+                break;
+            case (diff < 206):
+                points = 8;
+                break;
+            case (diff < 239):
+                points = 9;
+                break;
+            case (diff < 273):
+                points = 10;
+                break;
+            case (diff < 315):
+                points = 11;
+                break;
+            case (diff < 366):
+                points = 12;
+                break;
+            case (diff < 446):
+                points = 13;
+                break;
+            case (diff < 471):
+                points = 14;
+                break;
+            case (diff < 716):
+                points = 15;
+                break;
+            default:
+                points = 16;
+                break;
+        }
+
+        let topChange = (0 + ((topRating > bottomRating) ? -points : points));
+        let bottomChange = (0 + ((bottomRating > topRating) ? -points : points));
+        if (result === 1) {
+            topChange = (16 + ((topRating > bottomRating) ? -points : points));
+            bottomChange = (-16 + ((bottomRating > topRating) ? -points : points));
+        }
+        else if (result === 2) {
+            topChange = (-16 + ((topRating > bottomRating) ? -points : points));
+            bottomChange = (16 + ((bottomRating > topRating) ? -points : points));
+        }
+
+        let topTotal = 0;
+        if (topCount < 20) {
+            topTotal = (topRating * topCount) + bottomRating;
+            topTotal += ((result === 0) ? 0 : (400 * ((result === 1) ? 1 : -1)));
+        }
+        let bottomTotal = 0;
+        if (bottomCount < 20) {
+            bottomTotal = (bottomRating * bottomCount) + topRating;
+            bottomTotal += ((result === 0) ? 0 : (400 * ((result === 2) ? 1 : -1)));
+        }
+
+        if (topCount < 20) {
+            topCount++;
+            topRating = Math.trunc(topTotal / topCount);
+        }
+        else {
+            topRating += topChange;
+        }
+        if (bottomCount < 20) {
+            bottomCount++;
+            bottomRating = Math.trunc(bottomTotal / bottomCount);
+        }
+        else {
+            bottomRating += bottomChange;
+        }
+
+        if (top !== bottom) {
+            await db.query(
+                `UPDATE engines SET rating = $1, count = $2 WHERE id = $3;`,
+                [topRating, topCount, top]
+            );
+            await db.query(
+                `UPDATE engines SET rating = $1, count = $2 WHERE id = $3;`,
+                [bottomRating, bottomCount, bottom]
+            );
+        }
+
+        return res.send("RATINGS OK");
+    }
+    catch (err) {
+        return next(err);
+    }
+})
 
 async function createEngine(path, engineID) {
     let code = await db.query(
