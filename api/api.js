@@ -8,6 +8,8 @@ const db = require("../db");
 const ExpressError = require("../expressError.js");
 const { SECRET_KEY } = require("../config.js");
 
+const PROVISIONAL_COUNT = 0;
+
 router.get("/games", async (req, res, next) => {
     try {
         const games = await db.query(
@@ -51,9 +53,10 @@ router.get("/engines", async (req, res, next) => {
                 AND (g.game = '${req.query.Game}')
                 ${(req.query.Username === undefined) ? "" :
                 `AND (u.username = '${req.query.Username}')`}
-            ORDER BY u.username, e.engine
+            ORDER BY e.id
             ;`
         );
+        //ORDER BY u.username, e.engine
         return res.json(engines.rows);
     }
     catch (err) {
@@ -318,52 +321,52 @@ router.post("/ratings", async (req, res, next) => {
         let diff = Math.abs(topRating - bottomRating);
         let points;
         switch (true) {
-            case (diff < 12):
+            case (diff < 8):
                 points = 0;
                 break;
-            case (diff < 34):
+            case (diff < 12):
                 points = 1;
                 break;
-            case (diff < 56):
+            case (diff < 17):
                 points = 2;
                 break;
-            case (diff < 78):
+            case (diff < 25):
                 points = 3;
                 break;
-            case (diff < 101):
+            case (diff < 35):
                 points = 4;
                 break;
-            case (diff < 126):
+            case (diff < 49):
                 points = 5;
                 break;
-            case (diff < 151):
+            case (diff < 69):
                 points = 6;
                 break;
-            case (diff < 177):
+            case (diff < 95):
                 points = 7;
                 break;
-            case (diff < 206):
+            case (diff < 129):
                 points = 8;
                 break;
-            case (diff < 239):
+            case (diff < 174):
                 points = 9;
                 break;
-            case (diff < 273):
+            case (diff < 232):
                 points = 10;
                 break;
-            case (diff < 315):
+            case (diff < 305):
                 points = 11;
                 break;
-            case (diff < 366):
+            case (diff < 395):
                 points = 12;
                 break;
-            case (diff < 446):
+            case (diff < 506):
                 points = 13;
                 break;
-            case (diff < 471):
+            case (diff < 640):
                 points = 14;
                 break;
-            case (diff < 716):
+            case (diff < 800):
                 points = 15;
                 break;
             default:
@@ -383,24 +386,24 @@ router.post("/ratings", async (req, res, next) => {
         }
 
         let topTotal = 0;
-        if (topCount < 20) {
+        if (topCount < PROVISIONAL_COUNT) {
             topTotal = (topRating * topCount) + bottomRating;
             topTotal += ((result === 0) ? 0 : (400 * ((result === 1) ? 1 : -1)));
         }
         let bottomTotal = 0;
-        if (bottomCount < 20) {
+        if (bottomCount < PROVISIONAL_COUNT) {
             bottomTotal = (bottomRating * bottomCount) + topRating;
             bottomTotal += ((result === 0) ? 0 : (400 * ((result === 2) ? 1 : -1)));
         }
 
-        if (topCount < 20) {
+        if (topCount < PROVISIONAL_COUNT) {
             topCount++;
             topRating = Math.trunc(topTotal / topCount);
         }
         else {
             topRating += topChange;
         }
-        if (bottomCount < 20) {
+        if (bottomCount < PROVISIONAL_COUNT) {
             bottomCount++;
             bottomRating = Math.trunc(bottomTotal / bottomCount);
         }
