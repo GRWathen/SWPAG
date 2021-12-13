@@ -6,6 +6,8 @@ const { BCRYPT_WORK_FACTOR } = require("../config.js");
 
 class User {
     static async authenticate(username, password) {
+        // TODO: 
+        console.log("models - authenticate");
         const result = await db.query(
             `SELECT password FROM users WHERE username=$1;`,
             [username]
@@ -17,7 +19,23 @@ class User {
         return (false);
     }
 
+    static async registerGet(username) {
+        // TODO: 
+        console.log("models - register (get)");
+        const duplicateCheck = await db.query(
+            `SELECT username FROM users WHERE username = $1`, [username]
+        );
+        if (duplicateCheck.rows[0]) {
+            const error = new ExpressError(
+                `There already exists a user with username ${username}`, 400
+            );
+            throw error;
+        }
+    }
+
     static async register({ username, password }) {
+        // TODO: 
+        console.log("models - register (post)");
         const duplicateCheck = await db.query(
             `SELECT username FROM users WHERE username = $1`, [username]
         );
@@ -37,6 +55,8 @@ class User {
     }
 
     static async get(username) {
+        // TODO: 
+        console.log("models - get");
         const result = await db.query(
             `SELECT username FROM users WHERE username=$1;`,
             [username]

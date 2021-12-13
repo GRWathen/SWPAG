@@ -4,6 +4,8 @@ const ExpressError = require("../expressError.js");
 const { SECRET_KEY } = require("../config.js");
 
 function authenticateJWT(req, res, next) {
+    // TODO: 
+    console.log("middleware - authenticateJWT");
     try {
         const token = req.body.token;
         const data = jwt.verify(token, SECRET_KEY);
@@ -17,6 +19,8 @@ function authenticateJWT(req, res, next) {
 }
 
 function ensureLoggedIn(req, res, next) {
+    // TODO: 
+    console.log("middleware - ensureLoggedIn");
     if (!req.user) {
         const err = new ExpressError("Unauthorized", 401);
         return next(err);
@@ -27,6 +31,8 @@ function ensureLoggedIn(req, res, next) {
 }
 
 function ensureCorrectUser(req, res, next) {
+    // TODO: 
+    console.log("middleware - ensureCorrectUser");
     try {
         if (req.user.username === req.params.username) {
             return next();

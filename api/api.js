@@ -250,7 +250,7 @@ router.get("/move", async (req, res, next) => {
         const engine = require(path);
         const data = JSON.parse(req.query.Data);
         // TODO: move() infinite loop or illegal move
-        return res.json(engine.move(data));
+        return res.json(await engine.move(data));
     }
     catch (err) {
         // TODO: lose

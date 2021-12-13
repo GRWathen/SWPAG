@@ -11,7 +11,26 @@ const { BCRYPT_WORK_FACTOR, SECRET_KEY } = require("../config.js");
 
 const router = new express.Router();
 
+router.get("/register", async (req, res, next) => {
+    // TODO: 
+    try {
+        if (!req.query.username) {
+            throw new ExpressError(`Username required`, 400);
+        }
+        await User.registerGet(req.query.username);
+        return res.json({ "token": null });
+    }
+    catch (err) {
+        if (err.code === "23505") {
+            return next(new ExpressError(`Username taken`, 400));
+        }
+        return next(err);
+    }
+});
+
 router.post("/register", async (req, res, next) => {
+    // TODO: 
+    console.log("auth - register (post)");
     try {
         if (!req.body.username || !req.body.password) {
             throw new ExpressError(`Username/Password required`, 400);
@@ -29,6 +48,8 @@ router.post("/register", async (req, res, next) => {
 });
 
 router.post("/login", async (req, res, next) => {
+    // TODO: 
+    console.log("auth - login");
     try {
         const { username, password } = req.body;
         if (!username || !password) {

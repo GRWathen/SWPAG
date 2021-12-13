@@ -124,7 +124,7 @@ app.post('/register', (req, res, next) => {
 app.get('/api/staff/:fname', (req, res, next) => {
   return res.json({ fname: req.params.fname });
 });
----------- status codes ----------
+----------  codes ----------
 app.get('/whoops', (req, res, next) => {
   return res.status(404).json('Whoops! Nothing here!');
 });

@@ -6,6 +6,8 @@ const { ensureCorrectUser } = require("../middleware/auth.js");
 const router = express.Router();
 
 router.get("/:username", ensureCorrectUser, async function (req, res, next) {
+    // TODO: 
+    console.log("users - username");
     try {
         const user = await User.get(req.params.username);
         return res.json({ user });
@@ -15,6 +17,8 @@ router.get("/:username", ensureCorrectUser, async function (req, res, next) {
 });
 
 router.post("/", ensureCorrectUser, async function (req, res, next) {
+    // TODO: 
+    console.log("users - root");
     try {
         delete req.body.token;
 
@@ -23,7 +27,7 @@ router.post("/", ensureCorrectUser, async function (req, res, next) {
             username: user.username
         };
         const token = jwt.sign(payload, SECRET);
-        return res.status(201).json({ token });
+        return res.json({ token }).status(201);
     } catch (e) {
         return next(e);
     }
