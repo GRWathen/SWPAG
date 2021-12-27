@@ -8,9 +8,10 @@ CREATE DATABASE "swpagDB";
 \c "swpagDB"
 
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY, 
+    id SERIAL PRIMARY KEY,
     username TEXT NOT NULL,
-    password TEXT NOT NULL
+    password TEXT NOT NULL,
+    email TEXT NOT NULL
 );
 
 CREATE TABLE categories (
@@ -65,7 +66,8 @@ CREATE DATABASE "swpagDB-test";
 CREATE TABLE users (
     id SERIAL PRIMARY KEY, 
     username TEXT NOT NULL,
-    password TEXT NOT NULL
+    password TEXT NOT NULL,
+    email TEXT NOT NULL
 );
 
 CREATE TABLE categories (
