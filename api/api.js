@@ -266,6 +266,8 @@ router.get("/move", async (req, res, next) => {
 }
 //*/
 // TODO: confirm rating updates
+// TODO: zero/negative ratings?
+// TODO: update to current ELO rating
 router.post("/ratings", async (req, res, next) => {
     try {
         const top = req.body.params.TopEngine;

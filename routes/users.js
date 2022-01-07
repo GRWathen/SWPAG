@@ -6,7 +6,6 @@ const { ensureCorrectUser } = require("../middleware/auth.js");
 const router = express.Router();
 
 router.get("/:username", ensureCorrectUser, async function (req, res, next) {
-    // TODO: 
     console.log("users - username");
     try {
         const user = await User.get(req.params.username);
@@ -17,7 +16,6 @@ router.get("/:username", ensureCorrectUser, async function (req, res, next) {
 });
 
 router.post("/", ensureCorrectUser, async function (req, res, next) {
-    // TODO: 
     console.log("users - root");
     try {
         delete req.body.token;

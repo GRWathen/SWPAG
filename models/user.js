@@ -54,7 +54,7 @@ class User {
     static async get(username) {
         console.log("models - get");
         const result = await db.query(
-            `SELECT username FROM users WHERE username=$1;`,
+            `SELECT username, email FROM users WHERE username=$1;`,
             [username]
         );
         if (!result.rows[0]) {
