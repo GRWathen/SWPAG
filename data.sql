@@ -29,7 +29,8 @@ CREATE TABLE games (
     id SERIAL PRIMARY KEY, 
     game TEXT NOT NULL,
     title TEXT NOT NULL,
-    category_id INTEGER REFERENCES categories
+    category_id INTEGER REFERENCES categories,
+    human, INTEGER NOT NULL DEFAULT(0)
 );
 
 INSERT INTO games (game, title, category_id)
@@ -85,7 +86,8 @@ CREATE TABLE games (
     id SERIAL PRIMARY KEY, 
     game TEXT NOT NULL,
     title TEXT NOT NULL,
-    category_id INTEGER REFERENCES categories
+    category_id INTEGER REFERENCES categories,
+    human, INTEGER NOT NULL DEFAULT(0)
 );
 
 INSERT INTO games (game, title, category_id)

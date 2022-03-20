@@ -14,7 +14,7 @@ router.get("/games", async (req, res, next) => {
     try {
         const games = await db.query(
             `SELECT c.category, ARRAY(
-                SELECT CONCAT(game,'|',title) FROM games AS g
+                SELECT CONCAT(game,'|',title,'|',human) FROM games AS g
                 WHERE c.id = g.category_id
                 ORDER BY g.game
             )
@@ -268,6 +268,7 @@ router.get("/move", async (req, res, next) => {
 // TODO: confirm rating updates
 // TODO: zero/negative ratings?
 // TODO: update to current ELO rating
+// TODO: human player
 router.post("/ratings", async (req, res, next) => {
     try {
         const top = req.body.params.TopEngine;

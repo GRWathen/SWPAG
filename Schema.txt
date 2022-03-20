@@ -13,6 +13,7 @@
  │  │ game        │  │   │ username │  │
  │  │ title       │  │   │ password │  │
  └──┤ category_id │  │   └──────────┘  │
+    │ human       │  │                 │
     └─────────────┘  │                 │
                      │    Engines      │
                      │   ┌─────────┐   │
